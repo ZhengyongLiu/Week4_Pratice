@@ -1,0 +1,28 @@
+---
+title: "Global_Gender_Inequality_Data"
+output: pdf_document
+date: "2023-10-25"
+---
+```{r}
+library(readr)
+Gender_Data <- read.csv(here::here(
+  "Data", "HDR21-22_Composite_indices_complete_time_series.csv"))
+World_Data <- read.csv(here::here("Data","World_Countries_Generalized.csv"))
+
+library(dplyr)
+Gender_Data_Ed <- Gender_Data %>%
+  select(country, gii_2010, gii_2019) %>%
+  mutate(gii_diff = gii_2019 - gii_2010) %>%
+  arrange(country)
+```
+
+```{r}
+World_Data_ED <- World_Data %>%
+  left_join(Gender_Data_Ed, by = c("COUNTRY" = "country"))
+```
+
+```{r}
+write.csv(World_Data_ED, "World_Data_ED.csv")
+
+```
+
