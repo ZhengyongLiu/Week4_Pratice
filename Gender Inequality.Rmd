@@ -23,6 +23,5 @@ World_Data_ED <- World_Data %>%
 
 ```{r}
 write.csv(World_Data_ED, "World_Data_ED.csv")
-sssss
 ```
 
