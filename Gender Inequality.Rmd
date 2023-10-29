@@ -5,11 +5,19 @@ date: "2023-10-25"
 ---
 ```{r}
 library(readr)
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(tmap)
+```
+
+
+```{r}
 Gender_Data <- read.csv(here::here(
   "Data", "HDR21-22_Composite_indices_complete_time_series.csv"))
 World_Data <- read.csv(here::here("Data","World_Countries_Generalized.csv"))
+Worldshape <- st_read("/Users/liuzhengyong/Desktop/CASA Study/Geographic Information System/Week_4_Pratice/Week_Pratice/World_Countries_Generalized/World_Countries_Generalized.shp")
 
-library(dplyr)
 Gender_Data_Ed <- Gender_Data %>%
   select(country, gii_2010, gii_2019) %>%
   mutate(gii_diff = gii_2019 - gii_2010) %>%
@@ -19,9 +27,28 @@ Gender_Data_Ed <- Gender_Data %>%
 ```{r}
 World_Data_ED <- World_Data %>%
   left_join(Gender_Data_Ed, by = c("COUNTRY" = "country"))
+write.csv(World_Data_ED, "World_Data_ED.csv")
 ```
 
 ```{r}
-write.csv(World_Data_ED, "World_Data_ED.csv")
+World_Data2 <- World_Data %>%
+  left_join(World_Data_ED,by = c("COUNTRY" = "COUNTRY"))
+```
+
+```{r}
+World_Data2_sf <- st_as_sf(World_Data2, geom=st_geometry(Worldshape))
+
+ggplot(data = World_Data2_sf) +
+  geom_sf(aes(fill = gii_diff)) +
+  scale_fill_gradient(low = "green", high = "yellow", 
+                      name = "GII Difference (2019 - 2010)", n.breaks = 8) +
+  ggtitle("Global Gender Inequality Index Difference") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r}
+ggsave("my_plot.png", dpi=300)
 ```
 
